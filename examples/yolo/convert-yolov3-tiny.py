@@ -18,7 +18,13 @@ def save_conv2d_layer(f, gguf_writer, prefix, inp_c, filters, size, batch_normal
     weights_count = filters * inp_c * size * size
     l0_weights = np.fromfile(f, dtype=np.float32, count=weights_count)
     ## ggml doesn't support f32 convolution yet, use f16 instead
-    l0_weights = l0_weights.astype(np.float16)
+    # clamp weights to float16 range to avoid overflow during conversion
+    finfo = np.finfo(np.float16)
+    n_clamped = int(np.sum((l0_weights > finfo.max) | (l0_weights < finfo.min)))
+    if n_clamped > 0:
+        print("WARNING: {}: {} out of {} weights clamped to float16 range [{}, {}]".format(
+            prefix, n_clamped, weights_count, finfo.min, finfo.max))
+    l0_weights = np.clip(l0_weights, finfo.min, finfo.max).astype(np.float16)
     gguf_writer.add_tensor(prefix + "_weights", l0_weights, raw_shape=(filters, inp_c, size, size))
 
 
