@@ -1904,11 +1904,18 @@ extern "C" {
 
     // clamp
     // in-place, returns view(a)
-    GGML_API struct ggml_tensor * ggml_clamp(
+    GGML_API struct ggml_tensor * ggml_clamp_inplace(
             struct ggml_context * ctx,
             struct ggml_tensor  * a,
             float                 min,
             float                 max);
+
+    GGML_DEPRECATED(GGML_API struct ggml_tensor * ggml_clamp(
+            struct ggml_context * ctx,
+            struct ggml_tensor  * a,
+            float                 min,
+            float                 max),
+        "use ggml_clamp_inplace instead");
 
     // im2col
     // converts data into a format that effectively results in a convolution when combined with matrix multiplication

@@ -4350,9 +4350,9 @@ struct ggml_tensor * ggml_rope_multi_back(
     result->op = GGML_OP_ROPE_BACK;
     return result;
 }
-// ggml_clamp
+// ggml_clamp_inplace
 
-struct ggml_tensor * ggml_clamp(
+struct ggml_tensor * ggml_clamp_inplace(
         struct ggml_context * ctx,
         struct ggml_tensor  * a,
         float                 min,
@@ -4367,6 +4367,15 @@ struct ggml_tensor * ggml_clamp(
     result->src[0] = a;
 
     return result;
+}
+
+// ggml_clamp (deprecated, use ggml_clamp_inplace instead)
+struct ggml_tensor * ggml_clamp(
+        struct ggml_context * ctx,
+        struct ggml_tensor  * a,
+        float                 min,
+        float                 max) {
+    return ggml_clamp_inplace(ctx, a, min, max);
 }
 
 static int64_t ggml_calc_conv_output_size(int64_t ins, int64_t ks, int s, int p, int d) {
